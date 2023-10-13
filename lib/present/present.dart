@@ -12,7 +12,7 @@ class _PresentState extends State<Present> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+        body: Container(
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -32,23 +32,28 @@ class _PresentState extends State<Present> {
             ],
           ),
           Container(
-            width:350,
+            width: 350,
             child: Image.asset("images/present.png"),
           ),
           Container(
             child: Column(children: [
-              CustomButton(text: "Log in", onPressed: () {}),
+              CustomButton(
+                  text: "Log in",
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed("login");
+                  }),
               Container(
                 margin: EdgeInsets.only(top: 10),
                 child: MaterialButton(
-                  
                   onPressed: () {
-                    print("object");
+                    Navigator.of(context).pushReplacementNamed("register");
                   },
-                  child: Text("Sign up",style: TextStyle(fontSize: 16),),
+                  child: Text(
+                    "Sign up",
+                    style: TextStyle(fontSize: 16),
+                  ),
                   textColor: const Color.fromARGB(255, 100, 100, 100),
                   hoverColor: Colors.transparent,
-                  
                 ),
               )
             ]),

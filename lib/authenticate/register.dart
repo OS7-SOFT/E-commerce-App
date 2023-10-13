@@ -1,37 +1,35 @@
-import 'package:e_commerce_app/design/customButton.dart';
-import 'package:flutter/material.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../design/customButton.dart';
+
+class Register extends StatefulWidget {
+  const Register({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
-  //accounts lists
+class _RegisterState extends State<Register> {
+  //accounts
   var accounts = [
-    {"name":"Osama","email": "os1213@gmail.com", "pass": "123456"},
-    {"name":"Salem","email": "os1213@gmail.com", "pass": "123456"},
-    {"name":"Osman","email": "osama@gmail.com", "pass": "123456"},
-    {"name":"Mazen","email": "os@gmail.com", "pass": "123456"},
-    {"name":"Arwa","email": "os77@gmail.com", "pass": "123456"}
+    {"name": "osama", "email": "os1213@gmail.com", "pass": "123456"},
+    {"name": "Salem", "email": "os1213@gmail.com", "pass": "123456"},
+    {"name": "Osman", "email": "osama@gmail.com", "pass": "123456"},
+    {"name": "Mazen", "email": "os@gmail.com", "pass": "123456"},
+    {"name": "Arwa", "email": "os77@gmail.com", "pass": "123456"}
   ];
 
   GlobalKey<FormState> formState = new GlobalKey<FormState>();
   bool securePass = true;
-  var email, password;
+  var name, email, password;
 
   //login method
-  loginMethod() {
+  signUpMethod() {
     var formData = formState.currentState;
     if (formData!.validate()) {
       formData.save();
-      accounts.forEach((account) {
-        if (account["email"] == email && account["pass"] == password) {
-          print("login Successed");
-        }
-      });
+      accounts.add({"name": name, "email": email, "pass": password});
     }
   }
 
@@ -61,7 +59,7 @@ class _LoginState extends State<Login> {
                 ),
                 Row(children: [
                   Text(
-                    "Login",
+                    "Signup",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
                   ),
                 ])
@@ -74,16 +72,54 @@ class _LoginState extends State<Login> {
               child: Form(
                 key: formState,
                 child: Column(children: [
-                  //Email
+                  //Name Field
+                  TextFormField(
+                    onSaved: (val) {
+                      setState(() {
+                        name = val;
+                      });
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (val) {
+                      if (val!.trim() == "")
+                        return "Name field is required";
+                      else {
+                        //Check if user is already exist
+                        for (int i = 0; i < accounts.length; i++) {
+                          if (val.toLowerCase() ==
+                              accounts[i]["name"]!.toLowerCase())
+                            return "this name is already exists";
+                        }
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText: "Name",
+                        labelStyle: TextStyle(
+                            color: Color.fromARGB(255, 170, 170, 170)),
+                        contentPadding: EdgeInsets.symmetric(vertical: 15)),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  //Email Field
                   TextFormField(
                     onSaved: (val) {
                       setState(() {
                         email = val;
                       });
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (val) {
-                      return val?.trim() == "" ? "Email is required" : null;
+                      if (val!.trim() == "")
+                        return "Email is required";
+                      else {
+                        return val.endsWith("@gmail.com") == false
+                            ? "email syntax uncorrect"
+                            : null;
+                      }
                     },
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(
@@ -93,15 +129,20 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 20,
                   ),
-                  //Password
+                  //Password Field
                   TextFormField(
                     onSaved: (val) {
                       setState(() {
                         password = val;
                       });
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (val) {
-                      return val?.trim() == "" ? "Password is required" : null;
+                      if (val!.trim() == "") return "Passsword is requird";
+
+                      return val.length < 6
+                          ? "Password must be more than 6 character"
+                          : null;
                     },
                     decoration: InputDecoration(
                         labelText: "Password",
@@ -124,9 +165,9 @@ class _LoginState extends State<Login> {
             ),
             //Login button
             CustomButton(
-                text: "Log in",
+                text: "Sign Up",
                 onPressed: () {
-                  loginMethod();
+                  signUpMethod();
                 }),
             //move to create new account
             Padding(
@@ -135,16 +176,16 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account ?",
+                    "Already have an account ?",
                     style: TextStyle(
                         color: const Color.fromARGB(255, 126, 126, 126)),
                   ),
                   TextButton(
                       onPressed: () {
-                         Navigator.of(context).pushReplacementNamed("register");
+                        Navigator.of(context).pushReplacementNamed("login");
                       },
                       child: Text(
-                        "Sign up",
+                        "Sign in",
                         style: TextStyle(color: Colors.black),
                       ))
                 ],
