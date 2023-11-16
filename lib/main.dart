@@ -1,23 +1,25 @@
-import 'package:e_commerce_app/Featured/featured.dart';
-import 'package:e_commerce_app/authenticate/login.dart';
-import 'package:e_commerce_app/authenticate/register.dart';
-import 'package:e_commerce_app/home/home.dart';
-import 'package:e_commerce_app/present/present.dart';
-import 'package:e_commerce_app/productDetails/productDetails.dart';
+import 'package:e_commerce_app/Models/StateModels/ProductStateModel.dart';
+import 'package:e_commerce_app/Models/StateModels/UserStateModel.dart';
+import 'package:e_commerce_app/Screens/Present.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-      routes: {
-        "present":(context) => Present(),
-        "home":(context)=> HomePage(),
-        "register":(context) => Register(),
-        "login":(context) => Login(),
-        "featured":(context) => FeaturedPage()
-      },
-      theme: ThemeData(
-        primaryColor: Color(0xff667fea)
-      )));
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_)=> ProductStateModel()),
+        ChangeNotifierProvider(create: (context)=> UserStateModel()),
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Present(),
+          theme: ThemeData(primaryColor: Color(0xff667fea))),
+    );
+  }
 }
+
+

@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../design/customButton.dart';
+import 'package:e_commerce_app/Shared/primaryButton.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -39,6 +39,7 @@ class _RegisterState extends State<Register> {
       body: Padding(
         padding: const EdgeInsets.only(top: 50),
         child: Column(
+          
           children: [
             //arrow back and title
             Container(
@@ -46,15 +47,22 @@ class _RegisterState extends State<Register> {
               child: Column(children: [
                 Row(
                   children: [
-                    IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          Navigator.of(context).pushReplacementNamed("present");
-                        },
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.grey,
-                        )),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 40, ),
+                      child: IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            Navigator.of(context).pushReplacementNamed("present");
+                          },
+                          icon: Icon(
+                            Icons.arrow_back,
+                        
+                            color: Colors.grey,
+                          ),
+                          hoverColor: Colors.transparent,
+                          ),
+                          
+                    ),
                   ],
                 ),
                 Row(children: [
@@ -164,7 +172,7 @@ class _RegisterState extends State<Register> {
               ),
             ),
             //Login button
-            CustomButton(
+            PrimaryButton(
                 text: "Sign Up",
                 onPressed: () {
                   signUpMethod();

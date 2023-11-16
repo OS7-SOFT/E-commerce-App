@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatefulWidget {
+class PrimaryButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const CustomButton({required this.text, required this.onPressed});
+  const PrimaryButton({required this.text, required this.onPressed});
 
   @override
-  State<CustomButton> createState() => _CustomButtonState();
+  State<PrimaryButton> createState() => _PrimaryButtonState();
 }
 
-class _CustomButtonState extends State<CustomButton> {
-
+class _PrimaryButtonState extends State<PrimaryButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,8 +18,7 @@ class _CustomButtonState extends State<CustomButton> {
       height: 45,
       padding: EdgeInsets.symmetric(horizontal: 50),
       child: ElevatedButton(
-        onPressed:  widget.onPressed
-        ,
+        onPressed: widget.onPressed,
         child: Text(
           widget.text,
           style: TextStyle(fontSize: 20),
