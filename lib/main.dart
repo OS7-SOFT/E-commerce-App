@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/Models/StateModels/FieldStateModel.dart';
 import 'package:e_commerce_app/Models/StateModels/ProductStateModel.dart';
 import 'package:e_commerce_app/Models/StateModels/UserStateModel.dart';
 import 'package:e_commerce_app/Screens/Present.dart';
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_)=> ProductStateModel()),
         ChangeNotifierProvider(create: (context)=> UserStateModel()),
+        ChangeNotifierProvider(create: (context)=> FieldStateModel()),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

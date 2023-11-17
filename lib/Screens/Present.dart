@@ -53,6 +53,7 @@ class Present extends StatelessWidget {
                         size: 16,
                         colorDegree: 700,
                         onPressed: () {
+                          //route to Register Screen
                           Navigator.push(
                               context,
                               MaterialPageRoute(
