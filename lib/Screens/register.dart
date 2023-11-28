@@ -1,207 +1,162 @@
-
+import 'package:e_commerce_app/Models/StateModels/FieldStateModel.dart';
+import 'package:e_commerce_app/Models/StateModels/UserStateModel.dart';
+import 'package:e_commerce_app/Screens/login.dart';
+import 'package:e_commerce_app/Shared/customTextFormField.dart';
+import 'package:e_commerce_app/Shared/headAuthenticateScreens.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:e_commerce_app/Shared/primaryButton.dart';
+import 'package:provider/provider.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+import '../Models/DataModels/User.dart';
+import '../Shared/customTextButton.dart';
+import 'Home.dart';
 
-  @override
-  State<Register> createState() => _RegisterState();
-}
+// ignore: must_be_immutable
+class Register extends StatelessWidget {
+  GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  User _newUser = User();
 
-class _RegisterState extends State<Register> {
-  //accounts
-  var accounts = [
-    {"name": "osama", "email": "os1213@gmail.com", "pass": "123456"},
-    {"name": "Salem", "email": "os1213@gmail.com", "pass": "123456"},
-    {"name": "Osman", "email": "osama@gmail.com", "pass": "123456"},
-    {"name": "Mazen", "email": "os@gmail.com", "pass": "123456"},
-    {"name": "Arwa", "email": "os77@gmail.com", "pass": "123456"}
-  ];
-
-  GlobalKey<FormState> formState = new GlobalKey<FormState>();
-  bool securePass = true;
-  var name, email, password;
-
-  //login method
-  signUpMethod() {
-    var formData = formState.currentState;
-    if (formData!.validate()) {
-      formData.save();
-      accounts.add({"name": name, "email": email, "pass": password});
-    }
-  }
+  Register({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var userState = Provider.of<UserStateModel>(context);
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 50),
+      body: Container(
+        width: double.infinity,
+        margin: EdgeInsets.only(left: 10, right: 10, top: 20),
         child: Column(
-          
-          children: [
-            //arrow back and title
-            Container(
-              padding: EdgeInsets.only(left: 20),
-              child: Column(children: [
-                Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              //head Screen
+              HeadPage(title: "Signup"),
+              //Form Content
+              Consumer<UserStateModel>(
+                builder: (context, value, _) => Container(
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
+                  child: Form(
+                      key: _formState,
+                      child: Column(
+                        children: [
+                          //full name field
+                          CustomTextFormField(
+                            label: "Full Name",
+                            autovalidate: AutovalidateMode.onUserInteraction,
+                            validate: (val) {
+                              return val?.trim() == ""
+                                  ? "Full name is required"
+                                  : null;
+                            },
+                            onSaved: (val) => _newUser.FullName = val,
+                          ),
+                          //username field
+                          CustomTextFormField(
+                            label: "UserName",
+                            autovalidate: AutovalidateMode.onUserInteraction,
+                            validate: (val) =>
+                                _checkUserName(userState.items, val),
+                            onSaved: (val) => _newUser.Username = val,
+                          ),
+                          //email field
+                          CustomTextFormField(
+                            label: "Email",
+                            autovalidate: AutovalidateMode.onUserInteraction,
+                            validate: (val) {
+                              return _checkEmail(val);
+                            },
+                            onSaved: (val) => _newUser.Email = val,
+                          ),
+                          //password field
+                          Consumer<FieldStateModel>(
+                              builder: (context, fieldState, _) {
+                            return CustomTextFormField(
+                              label: "Password",
+                              isPassword: true,
+                              isSecure: fieldState.SecurePass,
+                              changeSecureMethod: fieldState.secureMethod,
+                              autovalidate: AutovalidateMode.onUserInteraction,
+                              validate: (val) => _checkPassword(val),
+                              onSaved: (val) => _newUser.Password = val,
+                            );
+                          }),
+                        ],
+                      )),
+                ),
+              ),
+              //Buttons
+              PrimaryButton(
+                  text: "Sign Up",
+                  onPressed: () {
+                    _registerMethod(userState, context);
+                  }),
+              Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 40, ),
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Navigator.of(context).pushReplacementNamed("present");
-                          },
-                          icon: Icon(
-                            Icons.arrow_back,
-                        
-                            color: Colors.grey,
-                          ),
-                          hoverColor: Colors.transparent,
-                          ),
-                          
+                    Text(
+                      "Already have an account ?",
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 126, 126, 126)),
                     ),
+                    CustomTextButton(
+                        text: "Sign in",
+                        size: 15,
+                        colorDegree: 800,
+                        onPressed: () {
+                          //route to Register Screen
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Login()));
+                        })
                   ],
                 ),
-                Row(children: [
-                  Text(
-                    "Signup",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
-                  ),
-                ])
-              ]),
-            ),
-            //Container for Forms
-            Container(
-              margin: EdgeInsets.only(bottom: 50, top: 45),
-              padding: EdgeInsets.symmetric(horizontal: 25),
-              child: Form(
-                key: formState,
-                child: Column(children: [
-                  //Name Field
-                  TextFormField(
-                    onSaved: (val) {
-                      setState(() {
-                        name = val;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (val) {
-                      if (val!.trim() == "")
-                        return "Name field is required";
-                      else {
-                        //Check if user is already exist
-                        for (int i = 0; i < accounts.length; i++) {
-                          if (val.toLowerCase() ==
-                              accounts[i]["name"]!.toLowerCase())
-                            return "this name is already exists";
-                        }
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        labelText: "Name",
-                        labelStyle: TextStyle(
-                            color: Color.fromARGB(255, 170, 170, 170)),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15)),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  //Email Field
-                  TextFormField(
-                    onSaved: (val) {
-                      setState(() {
-                        email = val;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (val) {
-                      if (val!.trim() == "")
-                        return "Email is required";
-                      else {
-                        return val.endsWith("@gmail.com") == false
-                            ? "email syntax uncorrect"
-                            : null;
-                      }
-                    },
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        labelText: "Email",
-                        labelStyle: TextStyle(
-                            color: Color.fromARGB(255, 170, 170, 170)),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15)),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  //Password Field
-                  TextFormField(
-                    onSaved: (val) {
-                      setState(() {
-                        password = val;
-                      });
-                    },
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (val) {
-                      if (val!.trim() == "") return "Passsword is requird";
-
-                      return val.length < 6
-                          ? "Password must be more than 6 character"
-                          : null;
-                    },
-                    decoration: InputDecoration(
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                            color: Color.fromARGB(255, 170, 170, 170)),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15),
-                        suffix: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              securePass = !securePass;
-                            });
-                          },
-                          icon: Icon(Icons.remove_red_eye,
-                              color: Colors.grey, size: 20),
-                        )),
-                    obscureText: securePass,
-                  ),
-                ]),
               ),
-            ),
-            //Login button
-            PrimaryButton(
-                text: "Sign Up",
-                onPressed: () {
-                  signUpMethod();
-                }),
-            //move to create new account
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Already have an account ?",
-                    style: TextStyle(
-                        color: const Color.fromARGB(255, 126, 126, 126)),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacementNamed("login");
-                      },
-                      child: Text(
-                        "Sign in",
-                        style: TextStyle(color: Colors.black),
-                      ))
-                ],
-              ),
-            ),
-          ],
-        ),
+            ]),
       ),
     );
+  }
+
+  //register method
+  void _registerMethod(UserStateModel userState, BuildContext context) {
+    var formData = _formState.currentState;
+    if (formData!.validate()) {
+      formData.save();
+      _newUser.Id = userState.items.length + 1;
+      //add user
+      userState.add(_newUser);
+      //set user 
+      userState.setUserLogged(_newUser);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+    }
+  }
+
+  //Check password
+  String? _checkPassword(val) {
+    if (val.trim() == "") return "Password is required";
+    return val.trim().length <= 4
+        ? "Password must be larg more than 4 charactar"
+        : null;
+  }
+
+  //Check email
+  String? _checkEmail(val) {
+    if (val.trim() == "") return "Email is required";
+
+    return val.endsWith("@gmail.com")
+        ? null
+        : "email syantex is uncorrect\n(Must be end with @gmail.com)";
+  }
+
+  //Check username if exists
+  String? _checkUserName(List<User> users, val) {
+    if (val.trim() == "") return "Username is required";
+
+    bool isExist = false;
+
+    for (int i = 0; i < users.length; i++) {
+      if (users[i].Username == val.trim()) isExist = true;
+    }
+
+    return isExist == true ? "this username is already exists" : null;
   }
 }

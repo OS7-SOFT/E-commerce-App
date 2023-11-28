@@ -3,11 +3,19 @@ import 'package:e_commerce_app/Screens/register.dart';
 import 'package:e_commerce_app/Shared/customTextButton.dart';
 import 'package:e_commerce_app/Shared/primaryButton.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../Models/StateModels/UserStateModel.dart';
+
+// ignore: must_be_immutable
 class Present extends StatelessWidget {
- 
+  Present({super.key});
+
   @override
   Widget build(BuildContext context) {
+    //Load all Accounts 
+    context.read<UserStateModel>().LoadAllAccounts();
+    //Present Content
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -16,7 +24,7 @@ class Present extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               //Title
-              titleScreen(),
+              _titleScreen(),
               //image
               TweenAnimationBuilder(
                   duration: Duration(milliseconds: 1000),
@@ -68,7 +76,7 @@ class Present extends StatelessWidget {
   }
 
   //Animate Title page
-  TweenAnimationBuilder<double> titleScreen() {
+  TweenAnimationBuilder<double> _titleScreen() {
     return TweenAnimationBuilder(
         child: Column(children: [
           Text(

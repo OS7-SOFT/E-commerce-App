@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class GenericStateModel<T> extends ChangeNotifier {
+  
+  //Get All items
   List<T> items = [];
-  //Get all data
-  List<T> get data => items;
+  
   //Get Count
   int get count => items.length;
 

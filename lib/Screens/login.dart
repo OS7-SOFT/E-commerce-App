@@ -1,27 +1,22 @@
-import 'package:e_commerce_app/Models/AccountsList.dart';
 import 'package:e_commerce_app/Models/DataModels/User.dart';
 import 'package:e_commerce_app/Models/StateModels/FieldStateModel.dart';
 import 'package:e_commerce_app/Models/StateModels/UserStateModel.dart';
-import 'package:e_commerce_app/Screens/Present.dart';
+import 'package:e_commerce_app/Screens/Home.dart';
 import 'package:e_commerce_app/Screens/register.dart';
 import 'package:e_commerce_app/Shared/customTextButton.dart';
 import 'package:e_commerce_app/Shared/customTextFormField.dart';
 import 'package:e_commerce_app/Shared/primaryButton.dart';
+import 'package:e_commerce_app/Shared/headAuthenticateScreens.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
-  @override
-  State<Login> createState() => _LoginState();
-}
+// ignore: must_be_immutable
+class Login extends StatelessWidget {
+  GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  bool _securePass = true;
+  String? _email, _password;
 
-class _LoginState extends State<Login> {
-  AccountList _accountList = AccountList();
-
-  GlobalKey<FormState> formState = GlobalKey<FormState>();
-  bool securePass = true;
-  String? email, password;
+  Login({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,47 +30,43 @@ class _LoginState extends State<Login> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Head content
-            headBuild(context),
+            HeadPage(title: "Login"),
             //Forms Content
             Column(
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   child: Form(
-                    key: formState,
+                    key: _formState,
                     child: Column(children: [
                       //Email
                       CustomTextFormField(
                         label: "Email",
                         autovalidate: AutovalidateMode.disabled,
                         onSaved: (val) {
-                          email = val;
+                          _email = val;
                         },
                         validate: (val) {
                           return val?.trim() == "" ? "Email is required" : null;
                         },
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
                       //Password
-                      Selector<FieldStateModel,bool>(
-                        selector: (context,field)=> field.SecurePass,
-                        builder: (context,_secure,_) {
-                          return CustomTextFormField(
-                            label: "Password",
-                            validate: (val) {
-                              return val?.trim() == ""
-                                  ? "Password is required"
-                                  : null;
-                            },
-                            onSaved: (val) => password = val,
-                            isPassword: true,
-                            isSecure: _secure,
-                            changeSecureMethod: fieldState.secureMethod,
-                          );
-                        }
-                      )
+                      Selector<FieldStateModel, bool>(
+                          selector: (context, field) => field.SecurePass,
+                          builder: (context, _secure, _) {
+                            return CustomTextFormField(
+                              label: "Password",
+                              validate: (val) {
+                                return val?.trim() == ""
+                                    ? "Password is required"
+                                    : null;
+                              },
+                              onSaved: (val) => _password = val,
+                              isPassword: true,
+                              isSecure: _secure,
+                              changeSecureMethod: fieldState.secureMethod,
+                            );
+                          })
                     ]),
                   ),
                 ),
@@ -83,12 +74,12 @@ class _LoginState extends State<Login> {
                 PrimaryButton(
                     text: "Log in",
                     onPressed: () {
-                      //load user data
-                      context
-                          .read<UserStateModel>()
-                          .setItems(_accountList.accounts);
                       //login
-                      loginMethod(userState.data);
+                      if (_loginMethod(userState))
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Home()));
+                      else
+                        _messageDialog(context);
                     }),
               ],
             ),
@@ -123,32 +114,8 @@ class _LoginState extends State<Login> {
     );
   }
 
-  //Build title and arrow
-  Container headBuild(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 20),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        IconButton(
-            padding: EdgeInsets.zero,
-            hoverColor: Colors.transparent,
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Present()));
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.grey,
-            )),
-        Text(
-          "Login",
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
-        ),
-      ]),
-    );
-  }
-
-  //Message Error 
-  Future<dynamic> MessageDialog() {
+  //Message Error
+  Future<dynamic> _messageDialog(context) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -171,7 +138,9 @@ class _LoginState extends State<Login> {
               color: Colors.red[500]),
           content: Text("Error in email or password !"),
           actions: [
-            TextButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("Close"))
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Close"))
           ],
         );
       },
@@ -179,20 +148,24 @@ class _LoginState extends State<Login> {
   }
 
   //login method
-  void loginMethod(List<User> users) {
-    var formData = formState.currentState;
+  bool _loginMethod(UserStateModel modelState) {
+    //users
+    List<User> users = modelState.items;
+    bool isExists = false;
+
+    var formData = _formState.currentState;
     if (formData!.validate()) {
       formData.save();
       //Check if user is exists
-      bool isExists = false;
       for (int i = 0; i < users.length; i++) {
-        if (users[i].Email == email && users[i].Password == password) {
-          print("Done");
+        if (users[i].Email == _email && users[i].Password == _password) {
+          //set user
+          modelState.setUserLogged(users[i]);
           isExists = true;
           break;
         }
       }
-      isExists == false ? MessageDialog() : null;
     }
+    return isExists;
   }
 }

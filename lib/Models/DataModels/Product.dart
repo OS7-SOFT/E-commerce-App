@@ -1,10 +1,19 @@
 class Product {
-  int? Id;
-  String? Name;
-  String? Descriptoin;
-  String? ImageUrl;
-  double? Price;
+  int Id;
+  String Name;
+  String Descriptoin;
+  String ImageUrl;
+  double Price;
   int Sold;
+  
 
-  Product({this.Id,this.Name, this.Descriptoin, this.ImageUrl, this.Price, this.Sold = 0});
+  Product(
+      {
+      required this.Id,
+      required this.Name,
+      required this.Descriptoin,
+      required this.ImageUrl,
+      required this.Price,
+      this.Sold = 0,
+      });
 }

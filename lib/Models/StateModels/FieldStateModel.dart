@@ -1,6 +1,3 @@
-
-
-import 'package:e_commerce_app/Models/StateModels/GenericStateModel.dart';
 import 'package:flutter/material.dart';
 
 class FieldStateModel extends ChangeNotifier {
